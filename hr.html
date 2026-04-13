@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>HR Panel</title>
+<style>
+:root{
+  --bg:#0f0f1a;--bg2:#1a1a2e;--bg3:#252540;--border:#2a2a45;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#475569;
+  --green:#22c55e;--green-bg:rgba(34,197,94,.12);--green-border:rgba(34,197,94,.3);
+  --red:#f87171;--red-bg:rgba(248,113,113,.12);--red-border:rgba(248,113,113,.3);
+  --amber:#fbbf24;--amber-bg:rgba(251,191,36,.12);--amber-border:rgba(251,191,36,.3);
+  --blue:#60a5fa;
+}
+[data-theme="light"]{
+  --bg:#f5f5f5;--bg2:#fff;--bg3:#f0f0f0;--border:#e5e5e5;
+  --text:#111;--text2:#555;--text3:#999;
+  --green:#16a34a;--green-bg:rgba(22,163,74,.1);--green-border:rgba(22,163,74,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px}
+.hdr{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
+.hdr-icon{width:34px;height:34px;border-radius:50%;background:var(--green-bg);display:flex;align-items:center;justify-content:center;font-size:16px;border:1.5px solid var(--green-border);flex-shrink:0}
+.hdr-info{flex:1}
+.hdr-title{font-size:14px;font-weight:700}
+.hdr-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.theme-btn{width:30px;height:30px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;flex-shrink:0}
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border)}
+.tab{flex:1;padding:11px 4px 10px;text-align:center;font-size:10px;font-weight:700;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;transition:all .2s}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+.page{display:none;padding:14px;animation:fi .2s ease}
+.page.active{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* FILTER */
+.filter-bar{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+.filter-bar input{flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-size:13px;outline:none}
+.filter-bar input:focus{border-color:var(--green)}
+.filter-btn{padding:9px 14px;border-radius:10px;border:none;background:var(--green);color:#fff;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.filter-btn:active{opacity:.8}
+
+/* STATS CARDS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:13px}
+.sc-lbl{font-size:10px;color:var(--text3);font-weight:600;margin-bottom:5px;text-transform:uppercase;letter-spacing:.3px}
+.sc-val{font-size:20px;font-weight:800}
+.sc-sub{font-size:10px;color:var(--text3);margin-top:3px}
+
+/* TOP LIST */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sec-ttl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px}
+.badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.b-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.b-amber{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border)}
+.b-green{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+.b-gray{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+
+.top-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-bottom:8px;padding:13px 14px;display:flex;align-items:center;gap:12px}
+.top-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.rank-1{background:#fbbf2420;color:#fbbf24}
+.rank-2{background:#94a3b820;color:#94a3b8}
+.rank-3{background:#cd7f3220;color:#cd7f32}
+.rank-n{background:var(--bg3);color:var(--text3)}
+.top-info{flex:1}
+.top-name{font-size:13px;font-weight:700}
+.top-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.top-count{text-align:right}
+.top-num{font-size:18px;font-weight:800;color:var(--red)}
+.top-label{font-size:10px;color:var(--text3);margin-top:2px}
+
+/* INBOX CARDS */
+.inbox-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.inbox-head{padding:12px 14px;cursor:pointer}
+.inbox-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.inbox-from{font-size:11px;color:var(--text3)}
+.inbox-date{font-size:11px;color:var(--text3)}
+.inbox-names{font-size:13px;font-weight:700;margin-bottom:4px}
+.inbox-filial{font-size:11px;color:var(--text2);margin-bottom:6px}
+.inbox-matn{font-size:13px;color:var(--text2);line-height:1.4;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.inbox-bottom{display:flex;align-items:center;justify-content:space-between}
+.inbox-vaqt{font-size:11px;color:var(--text3)}
+.inbox-body{display:none;border-top:1px solid var(--border);padding:14px}
+.inbox-body.open{display:block}
+.inbox-full-matn{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:12px;padding:10px 12px;background:var(--bg3);border-radius:10px}
+.inbox-hr-javob{margin-bottom:12px}
+.javob-lbl{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px}
+.javob-prev{font-size:13px;color:var(--text);padding:10px 12px;background:var(--green-bg);border:1px solid var(--green-border);border-radius:10px;line-height:1.4}
+.action-btns{display:flex;gap:8px;margin-bottom:12px}
+.btn-asosli{flex:1;padding:10px;border-radius:10px;border:none;background:var(--green);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+.btn-asossiz{flex:1;padding:10px;border-radius:10px;border:1px solid var(--red-border);background:var(--red-bg);color:var(--red);font-size:13px;font-weight:700;cursor:pointer}
+.btn-asosli:active,.btn-asossiz:active{opacity:.8}
+.javob-form{display:none}
+.javob-form.open{display:block}
+.javob-form textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-size:13px;font-family:inherit;resize:none;height:90px;outline:none;margin-bottom:8px}
+.javob-form textarea:focus{border-color:var(--green)}
+.btn-send{width:100%;padding:11px;border-radius:10px;border:none;background:var(--green);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+.btn-send:disabled{opacity:.5}
+.btn-cancel{width:100%;padding:8px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:12px;cursor:pointer;margin-top:6px}
+
+/* LOADING */
+.loading{text-align:center;padding:60px 16px;color:var(--text3);font-size:13px}
+.spinner{width:26px;height:26px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 12px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:60px 16px}
+.et{font-size:13px;color:var(--text3);margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-icon">🛡️</div>
+  <div class="hdr-info">
+    <div class="hdr-title">HR Panel</div>
+    <div class="hdr-sub" id="hdr-sub">Shikoyatlar boshqaruvi</div>
+  </div>
+  <div class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('dash',this)">📊 Dashboard</div>
+  <div class="tab" onclick="showTab('inbox',this)">📥 Inbox</div>
+</div>
+
+<div id="page-dash" class="page active">
+  <div class="loading"><div class="spinner"></div>Yuklanmoqda...</div>
+</div>
+<div id="page-inbox" class="page">
+  <div class="loading"><div class="spinner"></div></div>
+</div>
+
+<script>
+var API = 'https://simle.app.n8n.cloud/webhook';
+var params = new URLSearchParams(window.location.search);
+var uid = params.get('uid') || '';
+var filial = params.get('filial') || '';
+var BOT_API = 'https://api.telegram.org/bot8770279073:AAHqGiNOj8AKvBO9NScC_iH7vSpF7tEHiH0';
+
+var allData = null;
+var openCard = null;
+var pendingStatus = null;
+
+var isDark = true;
+function toggleTheme(){
+  isDark = !isDark;
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeBtn').textContent = isDark ? '🌙' : '☀️';
+  try{localStorage.setItem('hr-theme', isDark ? 'dark' : 'light');}catch(e){}
+}
+(function(){
+  try{
+    var t = localStorage.getItem('hr-theme');
+    if(t==='light'){isDark=false;document.documentElement.setAttribute('data-theme','light');document.getElementById('themeBtn').textContent='☀️';}
+  }catch(e){}
+})();
+
+function showTab(t, el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(tb){tb.classList.remove('active');});
+  document.getElementById('page-'+t).classList.add('active');
+  el.classList.add('active');
+}
+
+function statusBadge(s){
+  if(s==='asosli') return '<span class="badge b-green">✅ Asosli</span>';
+  if(s==='asossiz') return '<span class="badge b-red">❌ Asossiz</span>';
+  return '<span class="badge b-amber">🕐 Yangi</span>';
+}
+
+function renderDash(data, sanaFilter){
+  var shikoyatlar = data.shikoyatlar || [];
+  var dashboard = data.dashboard || [];
+
+  var total = shikoyatlar.length;
+  var yangi = shikoyatlar.filter(function(s){return s.status==='yangi';}).length;
+  var asosli = shikoyatlar.filter(function(s){return s.status==='asosli';}).length;
+  var asossiz = shikoyatlar.filter(function(s){return s.status==='asossiz';}).length;
+
+  var html = '';
+
+  // Filter
+  html += '<div class="filter-bar">';
+  html += '<input type="date" id="sana-filter" value="'+(sanaFilter||'')+'" onchange="applyFilter()">';
+  html += '<button class="filter-btn" onclick="clearFilter()">Barchasi</button>';
+  html += '</div>';
+
+  // Stats
+  html += '<div class="stats-grid">';
+  html += '<div class="stat-card"><div class="sc-lbl">Jami</div><div class="sc-val">'+total+'</div><div class="sc-sub">shikoyat</div></div>';
+  html += '<div class="stat-card"><div class="sc-lbl">Yangi</div><div class="sc-val" style="color:var(--amber)">'+yangi+'</div><div class="sc-sub">ko\'rib chiqilmagan</div></div>';
+  html += '<div class="stat-card"><div class="sc-lbl">Asosli</div><div class="sc-val" style="color:var(--green)">'+asosli+'</div><div class="sc-sub">tasdiqlangan</div></div>';
+  html += '<div class="stat-card"><div class="sc-lbl">Asossiz</div><div class="sc-val" style="color:var(--red)">'+asossiz+'</div><div class="sc-sub">rad etilgan</div></div>';
+  html += '</div>';
+
+  // Top list
+  if(dashboard.length){
+    html += '<div class="sec-hdr"><div class="sec-ttl">Eng ko\'p shikoyat olganlar</div><span class="badge b-red">'+dashboard.length+' ta</span></div>';
+    dashboard.forEach(function(d, i){
+      var rankClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-n';
+      var rankText = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+      html += '<div class="top-card">';
+      html += '<div class="top-rank '+rankClass+'">'+rankText+'</div>';
+      html += '<div class="top-info"><div class="top-name">'+d.ism+'</div>';
+      html += '<div class="top-sub">Asosli: '+d.asosli+' ta</div></div>';
+      html += '<div class="top-count"><div class="top-num">'+d.count+'</div><div class="top-label">shikoyat</div></div>';
+      html += '</div>';
+    });
+  } else {
+    html += '<div class="empty"><div style="font-size:40px">🎉</div><div class="et">Shikoyat yo\'q!</div></div>';
+  }
+
+  document.getElementById('page-dash').innerHTML = html;
+}
+
+function renderInbox(data){
+  var shikoyatlar = data.shikoyatlar || [];
+
+  if(!shikoyatlar.length){
+    document.getElementById('page-inbox').innerHTML = '<div class="empty"><div style="font-size:40px">📭</div><div class="et">Shikoyatlar yo\'q</div></div>';
+    return;
+  }
+
+  var html = '';
+  shikoyatlar.forEach(function(s, i){
+    var cardId = 'card-'+i;
+    html += '<div class="inbox-card" id="'+cardId+'">';
+
+    // Head (clickable)
+    html += '<div class="inbox-head" onclick="toggleCard(\''+cardId+'\',\''+s.id+'\')">';
+    html += '<div class="inbox-meta"><span class="inbox-from">Kimdan: <b>'+s.kimdan_ism+'</b></span><span class="inbox-date">'+s.sana+'</span></div>';
+    html += '<div class="inbox-names">'+s.kimga_ism+' haqida shikoyat</div>';
+    html += '<div class="inbox-filial">📍 '+s.filial+' · ⏰ '+s.vaqt+'</div>';
+    html += '<div class="inbox-matn">'+s.matn+'</div>';
+    html += '<div class="inbox-bottom">'+statusBadge(s.status)+'<span style="font-size:11px;color:var(--text3)">▾</span></div>';
+    html += '</div>';
+
+    // Body (expandable)
+    html += '<div class="inbox-body" id="body-'+cardId+'">';
+    html += '<div class="inbox-full-matn">'+s.matn+'</div>';
+
+    if(s.hr_javob){
+      html += '<div class="inbox-hr-javob"><div class="javob-lbl">HR javobi:</div>';
+      html += '<div class="javob-prev">'+s.hr_javob+'</div></div>';
+    }
+
+    if(s.status === 'yangi'){
+      html += '<div class="action-btns">';
+      html += '<button class="btn-asosli" onclick="openJavob(\''+cardId+'\',\''+s.id+'\',\''+s.kimdan_id+'\',\'asosli\')">✅ Asosli</button>';
+      html += '<button class="btn-asossiz" onclick="openJavob(\''+cardId+'\',\''+s.id+'\',\''+s.kimdan_id+'\',\'asossiz\')">❌ Asossiz</button>';
+      html += '</div>';
+    }
+
+    html += '<div class="javob-form" id="form-'+cardId+'">';
+    html += '<div class="javob-lbl" id="form-lbl-'+cardId+'">HR javobi:</div>';
+    html += '<textarea id="javob-'+cardId+'" placeholder="Javob matnini kiriting..."></textarea>';
+    html += '<button class="btn-send" id="send-'+cardId+'" onclick="sendJavob(\''+cardId+'\',\''+s.id+'\',\''+s.kimdan_id+'\')">📤 Yuborish</button>';
+    html += '<button class="btn-cancel" onclick="closeJavob(\''+cardId+'\')">Bekor qilish</button>';
+    html += '</div>';
+
+    html += '</div></div>';
+  });
+
+  document.getElementById('page-inbox').innerHTML = html;
+}
+
+function toggleCard(cardId){
+  var body = document.getElementById('body-'+cardId);
+  if(!body) return;
+  body.classList.toggle('open');
+}
+
+function openJavob(cardId, shikoyatId, kimdanId, status){
+  pendingStatus = status;
+  var form = document.getElementById('form-'+cardId);
+  var lbl = document.getElementById('form-lbl-'+cardId);
+  if(!form) return;
+  form.classList.add('open');
+  if(lbl) lbl.textContent = status==='asosli' ? '✅ Asosli deb belgilash — javob:' : '❌ Asossiz deb belgilash — javob:';
+  document.getElementById('javob-'+cardId).focus();
+}
+
+function closeJavob(cardId){
+  var form = document.getElementById('form-'+cardId);
+  if(form) form.classList.remove('open');
+  pendingStatus = null;
+}
+
+function sendJavob(cardId, shikoyatId, kimdanId){
+  var javob = document.getElementById('javob-'+cardId).value.trim();
+  if(!javob){
+    document.getElementById('javob-'+cardId).style.borderColor = 'var(--red)';
+    return;
+  }
+  var btn = document.getElementById('send-'+cardId);
+  btn.disabled = true;
+  btn.textContent = 'Yuborilmoqda...';
+
+  fetch(API + '/shikoyat-javob', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      id: shikoyatId,
+      status: pendingStatus,
+      hr_javob: javob,
+      kimdan_id: kimdanId
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.success){
+      load();
+    } else {
+      btn.disabled = false;
+      btn.textContent = '📤 Yuborish';
+    }
+  })
+  .catch(function(){
+    btn.disabled = false;
+    btn.textContent = '📤 Yuborish';
+  });
+}
+
+function applyFilter(){
+  var sana = document.getElementById('sana-filter').value;
+  loadWithFilter(sana);
+}
+
+function clearFilter(){
+  loadWithFilter('');
+}
+
+function loadWithFilter(sana){
+  document.getElementById('page-dash').innerHTML = '<div class="loading"><div class="spinner"></div>Yuklanmoqda...</div>';
+  var url = API + '/shikoyatlar?filial=' + encodeURIComponent(filial);
+  if(sana) url += '&sana=' + sana;
+
+  fetch(url)
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var data = Array.isArray(d) ? d[0] : d;
+      allData = data;
+      renderDash(data, sana);
+      renderInbox(data);
+    })
+    .catch(function(e){
+      document.getElementById('page-dash').innerHTML = '<div class="empty"><div style="font-size:40px">⚠️</div><div class="et">Xato: '+e.message+'</div></div>';
+    });
+}
+
+function load(){
+  document.getElementById('page-dash').innerHTML = '<div class="loading"><div class="spinner"></div>Yuklanmoqda...</div>';
+  document.getElementById('page-inbox').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  loadWithFilter('');
+}
+
+load();
+</script>
+</body>
+</html>
