@@ -196,8 +196,10 @@ function submit(){
       hr_telegram_id: hrId
     })
   })
-  .then(function(r){return r.json();})
-  .then(function(d){
+ .then(function(r){return r.text();})
+ .then(function(txt){
+   var d = {};
+   try{ d = JSON.parse(txt); }catch(e){}
     if(d.success){
       document.getElementById('main').innerHTML =
         '<div class="success">' +
